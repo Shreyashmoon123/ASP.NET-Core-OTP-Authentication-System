@@ -1,0 +1,276 @@
+﻿@{
+    ViewData["Title"] = "OTP Authentication";
+}
+
+<div class="container mt-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-6">
+
+            <div class="card shadow">
+
+                <div class="card-header text-center">
+                    <h3>OTP Authentication</h3>
+                </div>
+
+                <div class="card-body">
+
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success" role="alert">
+                            @TempData["Success"]
+                        </div>
+                    }
+
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @TempData["Error"]
+                        </div>
+                    }
+
+
+                    <!-- SEND OTP -->
+
+                    <form asp-controller="OtpView"
+                          asp-action="SendOtp"
+                          method="post">
+
+                        <h5 class="mb-3">
+                            Send OTP
+                        </h5>
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Email Address
+                            </label>
+
+                            <input type="email"
+                                   name="Email"
+                                   class="form-control"
+                                   placeholder="Enter your email"
+                                   required />
+
+                        </div>
+
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                OTP Purpose
+                            </label>
+
+                            <select name="Purpose"
+                                    class="form-select"
+                                    required>
+
+                                <option value="">
+                                    Select Purpose
+                                </option>
+
+                                <option value="PasswordReset">
+                                    Password Reset
+                                </option>
+
+                                <option value="Login">
+                                    Login
+                                </option>
+
+                                <option value="EmailVerification">
+                                    Email Verification
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="d-grid">
+
+                            <button type="submit"
+                                    class="btn btn-primary">
+                                Send OTP
+                            </button>
+
+                        </div>
+
+                    </form>
+
+
+                    <hr class="my-4">
+
+
+                    <!-- VERIFY OTP -->
+
+                    <form id="verifyForm"
+                          asp-controller="OtpView"
+                          asp-action="VerifyOtp"
+                          method="post">
+
+                        <h5 class="mb-3">
+                            Verify OTP
+                        </h5>
+
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Enter OTP
+                            </label>
+
+                            <div class="d-flex gap-2 justify-content-center">
+
+                                <input type="text"
+                                       class="form-control text-center otp-input"
+                                       maxlength="1"
+                                       inputmode="numeric"
+                                       required />
+
+                                <input type="text"
+                                       class="form-control text-center otp-input"
+                                       maxlength="1"
+                                       inputmode="numeric"
+                                       required />
+
+                                <input type="text"
+                                       class="form-control text-center otp-input"
+                                       maxlength="1"
+                                       inputmode="numeric"
+                                       required />
+
+                                <input type="text"
+                                       class="form-control text-center otp-input"
+                                       maxlength="1"
+                                       inputmode="numeric"
+                                       required />
+
+                                <input type="text"
+                                       class="form-control text-center otp-input"
+                                       maxlength="1"
+                                       inputmode="numeric"
+                                       required />
+
+                                <input type="text"
+                                       class="form-control text-center otp-input"
+                                       maxlength="1"
+                                       inputmode="numeric"
+                                       required />
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Hidden Email -->
+
+                        <input type="hidden"
+                               name="Email"
+                               id="verifyEmail"
+                               value="@TempData["Email"]" />
+
+
+                        <!-- Hidden Purpose -->
+
+                        <input type="hidden"
+                               name="Purpose"
+                               id="verifyPurpose"
+                               value="@TempData["Purpose"]" />
+
+
+                        <!-- Hidden OTP -->
+
+                        <input type="hidden"
+                               name="OTP"
+                               id="otpValue" />
+
+
+                        <div class="d-grid">
+
+                            <button type="submit"
+                                    class="btn btn-success">
+                                Verify OTP
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+
+                <!-- FOOTER -->
+
+                <div class="card-footer text-center">
+
+                    <p class="mb-2">
+
+                        Don't have an account?
+
+                        <a asp-controller="Account"
+                           asp-action="Register">
+                            Register
+                        </a>
+
+                    </p>
+
+
+                    <p class="mb-0">
+
+                        Already have an account?
+
+                        <a asp-controller="Account"
+                           asp-action="Login">
+                            Login
+                        </a>
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    const otpInputs = document.querySelectorAll(".otp-input");
+
+    otpInputs.forEach((input, index) => {
+
+        input.addEventListener("input", () => {
+
+            if (input.value && index < otpInputs.length - 1) {
+
+                otpInputs[index + 1].focus();
+
+            }
+
+        });
+
+        });
+
+
+        const verifyForm = document.getElementById("verifyForm");
+
+        verifyForm.addEventListener("submit", function () {
+
+            let otp = "";
+
+            otpInputs.forEach(input => {
+
+                otp += input.value;
+
+            });
+
+            document.getElementById("otpValue").value = otp;
+
+        });
+
+</script>

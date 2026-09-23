@@ -16,6 +16,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 
 builder.Services.AddScoped<OtpService>();
 builder.Services.AddScoped <EmailService>();
+builder.Services.AddHttpClient();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();

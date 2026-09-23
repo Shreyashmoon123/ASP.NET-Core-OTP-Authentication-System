@@ -48,5 +48,41 @@ namespace OtpAuthenticationSystem.Services
             }
 
         }
+        public async Task<bool> IsCooldownActive(string userId, string purpose)
+        {
+            var lastOtp = await _context.otp
+                .Where(x => x.UserId == userId &&
+                x.Purpose == purpose)
+                .OrderByDescending(x => x.CreatedAt)
+                .FirstOrDefaultAsync();
+
+            if(lastOtp == null)
+            {
+                return false;
+            }
+            var cooldownTime = lastOtp.CreatedAt.AddSeconds(60);
+            return DateTime.UtcNow < cooldownTime;
+        }
+
+        public async Task<bool> IsRateLimitExceeded(string userId, string purpose)
+        {
+            var windowstart = DateTime.UtcNow.AddMinutes(-10);
+
+            var requestCount = await _context.otp
+                .CountAsync(x => x.UserId == userId &&
+                 x.Purpose == purpose &&
+                 x.CreatedAt >= windowstart);
+
+            return requestCount >= 5;
+        }
+
+        public bool VerifyOtp(string otp,string storedHash,string storedSalt)
+        {
+            byte[] salt = Convert.FromBase64String(storedSalt);
+            byte[] hash = Rfc2898DeriveBytes.Pbkdf2(otp, salt, 100000, HashAlgorithmName.SHA256, 32);
+
+            string enterOtpHash = Convert.ToBase64String(hash);
+            return enterOtpHash == storedHash;
+        }
     }
 }
